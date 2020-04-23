@@ -33,7 +33,7 @@ tar -xf grandcentralframes.tar.gz -C /path/to/dataset/
 
 To train SCALOR with default settings, run this command:
 
-```python
+```bash
 python train.py --data-dir /path/to/dataset/
 ```
 
