@@ -33,7 +33,7 @@ def main(args):
     train_data = TrainStation(args=args, train=True)
 
     train_loader = DataLoader(
-        train_data, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
+        train_data, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, drop_last=True)
 
     num_train = len(train_data)
 
@@ -121,17 +121,21 @@ def main(args):
                 log_summary(args, writer, imgs, y_seq, global_step, log_disc_list,
                             log_prop_list, scalor_log_list, prefix='train')
 
-                ####################################### do generation ####################################
-                args.phase_generate = True
-                y_seq, log_like, kl_z_what, kl_z_where, kl_z_depth, \
-                kl_z_pres, kl_z_bg, log_imp, counting, \
-                log_disc_list, log_prop_list, scalor_log_list = model(imgs)
-                args.phase_generate = False
-                log_summary(args, writer, imgs, y_seq, global_step, log_disc_list,
-                            log_prop_list, scalor_log_list, prefix='generate')
-                ####################################### end generation ####################################
-
                 last_count = local_count
+
+            if global_step % args.generate_freq == 0:
+                ####################################### do generation ####################################
+                model.eval()
+                with torch.no_grad():
+                    args.phase_generate = True
+                    y_seq, log_like, kl_z_what, kl_z_where, kl_z_depth, \
+                    kl_z_pres, kl_z_bg, log_imp, counting, \
+                    log_disc_list, log_prop_list, scalor_log_list = model(imgs)
+                    args.phase_generate = False
+                    log_summary(args, writer, imgs, y_seq, global_step, log_disc_list,
+                                log_prop_list, scalor_log_list, prefix='generate')
+                model.train()
+                ####################################### end generation ####################################
 
             if global_step % args.save_epoch_freq == 0 or global_step == 1:
                 save_ckpt(args.ckpt_dir, model, optimizer, global_step, epoch,

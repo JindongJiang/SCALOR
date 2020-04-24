@@ -20,8 +20,10 @@ def parse(parser):
                         metavar='CP', help='rate of gradient clipping')
     parser.add_argument('--print-freq', '-p', default=100, type=int,
                         metavar='N', help='print batch frequency (default: 100)')
-    parser.add_argument('--save-epoch-freq', '-s', default=500, type=int,
-                        metavar='N', help='save epoch frequency (default: 500)')
+    parser.add_argument('--generate-freq', '-gp', default=500, type=int,
+                        metavar='N', help='generation frequency (on training set) (default: 500)')
+    parser.add_argument('--save-epoch-freq', '-s', default=5000, type=int,
+                        metavar='N', help='save epoch frequency (default: 5000)')
     parser.add_argument('--last-ckpt', default='', type=str, metavar='PATH',
                         help='path to latest checkpoint (default: none)')
     parser.add_argument('--ckpt-dir', default='./model/', metavar='DIR',
@@ -38,6 +40,8 @@ def parse(parser):
                         help='Sigma for log likelihood.')
     parser.add_argument('--phase-parallel', default=True, type=bool,
                         help='Multi-GPUs')
+    parser.add_argument('--phase-simplify-summary', default=True, type=bool,
+                        help='Only show image in summary log.')
 
     args = parser.parse_args()
 

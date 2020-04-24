@@ -233,7 +233,7 @@ class ProposalCore(nn.Module):
 
 class ProposalRejectionCell(nn.Module):
 
-    def __init__(self, args, z_what_net, glimpse_dec_net, max_num_obj=15, sigma=0.1):
+    def __init__(self, args, z_what_net, glimpse_dec_net):
         super(ProposalRejectionCell, self).__init__()
         self.args = args
 
@@ -242,8 +242,7 @@ class ProposalRejectionCell(nn.Module):
         self.z_pres_anneal_start_value = 1e-1
         self.z_pres_anneal_end_value = self.args.z_pres_anneal_end_value
         self.z_pres_masked_prior = 1e-8
-        self.likelihood_sigma = sigma
-        self.max_num_obj = max_num_obj
+        self.max_num_obj = args.max_num_obj
 
         self.ProposalNet = ProposalCore(self.args)
         self.z_what_net = z_what_net

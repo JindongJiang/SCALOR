@@ -43,7 +43,7 @@ def log_summary(args, writer, imgs, y_seq, global_step, log_disc_list,
         alpha_map_list.append(scalor_log_list[j]['alpha_map'][:args.num_img_summary])
         x_mask_color_list.append(scalor_log_list[j]['x_mask_color'][:args.num_img_summary])
 
-        if prefix == 'train':
+        if prefix == 'train' and not args.phase_simplify_summary:
             writer.add_histogram(f'{prefix}_inside_value_scalor_{j}/importance_map_norm',
                                  scalor_log_list[j]['importance_map_norm']
                                  [scalor_log_list[j]['importance_map_norm'] > 0].cpu().detach().numpy(),
@@ -180,7 +180,7 @@ def log_summary(args, writer, imgs, y_seq, global_step, log_disc_list,
                 for l in range(num_obj - int(log_prop['lengths'][k])):
                     idx_false[0].append(k)
                     idx_false[1].append(int(log_prop['lengths'][k] + l))
-            if prefix == 'train':
+            if prefix == 'train' and not args.phase_simplify_summary:
                 for key, value in log_prop.items():
                     if key == 'lengths':
                         writer.add_histogram(f'{prefix}_inside_value_prop_{j}/{key}', value.cpu().detach().numpy(),
@@ -201,57 +201,58 @@ def log_summary(args, writer, imgs, y_seq, global_step, log_disc_list,
         else:
             bbox_prop_one_time_step = imgs[:args.num_img_summary, j].cpu()
             bbox_prop_list.append(bbox_prop_one_time_step)
-        if prefix == 'train':
+        if prefix == 'train' and not args.phase_simplify_summary:
             for key, value in log_disc.items():
                 writer.add_histogram(f'{prefix}_inside_value_disc_{j}/{key}', value.cpu().detach().numpy(),
                                      global_step)
 
-        for m in range(int(min(args.num_img_summary, bs))):
+        if not args.phase_simplify_summary:
+            for m in range(int(min(args.num_img_summary, bs))):
 
-            grid_image = make_grid(
-                bbox[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
-                normalize=True, pad_value=1
-            )
-            writer.add_image(f'{prefix}_disc/1-bbox_{m}_{j}', grid_image, global_step)
+                grid_image = make_grid(
+                    bbox[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
+                    normalize=True, pad_value=1
+                )
+                writer.add_image(f'{prefix}_disc/1-bbox_{m}_{j}', grid_image, global_step)
 
-            grid_image = make_grid(
-                y_each_cell[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
-                normalize=True, pad_value=1
-            )
-            writer.add_image(f'{prefix}_disc/2-y_each_cell_{m}_{j}', grid_image, global_step)
+                grid_image = make_grid(
+                    y_each_cell[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
+                    normalize=True, pad_value=1
+                )
+                writer.add_image(f'{prefix}_disc/2-y_each_cell_{m}_{j}', grid_image, global_step)
 
-            grid_image = make_grid(
-                o_each_cell[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
-                normalize=True, pad_value=1
-            )
-            writer.add_image(f'{prefix}_disc/3-o_each_cell_{m}_{j}', grid_image, global_step)
+                grid_image = make_grid(
+                    o_each_cell[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
+                    normalize=True, pad_value=1
+                )
+                writer.add_image(f'{prefix}_disc/3-o_each_cell_{m}_{j}', grid_image, global_step)
 
-            grid_image = make_grid(
-                alpha_each_cell[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
-                normalize=True, pad_value=1
-            )
-            writer.add_image(f'{prefix}_disc/4-alpha_hat_each_cell_{m}_{j}', grid_image, global_step)
+                grid_image = make_grid(
+                    alpha_each_cell[m * args.num_cell_h * args.num_cell_w:(m + 1) * args.num_cell_h * args.num_cell_w], 8,
+                    normalize=True, pad_value=1
+                )
+                writer.add_image(f'{prefix}_disc/4-alpha_hat_each_cell_{m}_{j}', grid_image, global_step)
 
-            if log_prop_list[j]:
-                bbox_prop = visualize(imgs[m, j].cpu(),
-                                      log_prop['z_pres'][m].cpu().detach(),
-                                      log_prop['z_where_scale'][m].cpu().detach(),
-                                      log_prop['z_where_shift'][m].cpu().detach())
+                if log_prop_list[j]:
+                    bbox_prop = visualize(imgs[m, j].cpu(),
+                                          log_prop['z_pres'][m].cpu().detach(),
+                                          log_prop['z_where_scale'][m].cpu().detach(),
+                                          log_prop['z_where_shift'][m].cpu().detach())
 
-                grid_image = make_grid(bbox_prop, 5, normalize=True, pad_value=1)
-                writer.add_image(f'{prefix}_prop/1-bbox_{m}_{j}', grid_image, global_step)
+                    grid_image = make_grid(bbox_prop, 5, normalize=True, pad_value=1)
+                    writer.add_image(f'{prefix}_prop/1-bbox_{m}_{j}', grid_image, global_step)
 
-                y_each_obj = log_prop['y_each_obj'][m].view(-1, 3, img_h, img_w).cpu().detach()
-                grid_image = make_grid(y_each_obj, 5, normalize=True, pad_value=1)
-                writer.add_image(f'{prefix}_prop/2-y_each_obj_{m}_{j}', grid_image, global_step)
+                    y_each_obj = log_prop['y_each_obj'][m].view(-1, 3, img_h, img_w).cpu().detach()
+                    grid_image = make_grid(y_each_obj, 5, normalize=True, pad_value=1)
+                    writer.add_image(f'{prefix}_prop/2-y_each_obj_{m}_{j}', grid_image, global_step)
 
-                o_each_obj = log_prop['o_each_obj'][m].view(-1, 3, img_h, img_w).cpu().detach()
-                grid_image = make_grid(o_each_obj, 5, normalize=True, pad_value=1)
-                writer.add_image(f'{prefix}_prop/3-o_each_obj_{m}_{j}', grid_image, global_step)
+                    o_each_obj = log_prop['o_each_obj'][m].view(-1, 3, img_h, img_w).cpu().detach()
+                    grid_image = make_grid(o_each_obj, 5, normalize=True, pad_value=1)
+                    writer.add_image(f'{prefix}_prop/3-o_each_obj_{m}_{j}', grid_image, global_step)
 
-                alpha_each_obj = log_prop['alpha_hat_each_obj'][m].view(-1, 1, img_h, img_w).cpu().detach()
-                grid_image = make_grid(alpha_each_obj, 5, normalize=True, pad_value=1)
-                writer.add_image(f'{prefix}_prop/4-alpha_each_obj_{m}_{j}', grid_image, global_step)
+                    alpha_each_obj = log_prop['alpha_hat_each_obj'][m].view(-1, 1, img_h, img_w).cpu().detach()
+                    grid_image = make_grid(alpha_each_obj, 5, normalize=True, pad_value=1)
+                    writer.add_image(f'{prefix}_prop/4-alpha_each_obj_{m}_{j}', grid_image, global_step)
 
         bbox_disc = visualize(imgs[:args.num_img_summary, j].cpu(),
                               log_disc['z_pres'][:args.num_img_summary].cpu().detach(),
