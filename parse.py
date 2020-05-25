@@ -3,7 +3,7 @@ from common import *
 
 def parse(parser):
     parser.add_argument('--data-dir', default='./data', metavar='DIR',
-                        help='train.pt file')
+                        help='Path to the data folder')
     parser.add_argument('--nocuda', action='store_true', default=False,
                         help='disables CUDA training')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
