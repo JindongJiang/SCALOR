@@ -218,7 +218,7 @@ class ProposalCore(nn.Module):
         z_where_origin = z_where.clone()
 
         scale, ratio = z_where[:, :2].tanh().chunk(2, 1)
-        scale = self.args.size_anc + self.args.var_s * scale  # add bias to let masking do its job
+        scale = self.args.size_anc + self.args.var_s * scale
         ratio = self.args.ratio_anc + self.args.var_anc * ratio
         ratio_sqrt = ratio.sqrt()
         z_where[:, 0:1] = scale / ratio_sqrt
