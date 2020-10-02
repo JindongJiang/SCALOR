@@ -21,7 +21,7 @@ conda activate scalor_env
 
 ## Dataset
 
-The "Grand Central Station" dataset can be downloaded [here](https://bit.ly/3apHJEw). After downloading the file, extract the dataset using this command:
+The "Grand Central Station" dataset can be downloaded [here](https://bit.ly/36tckTa). After downloading the file, extract the dataset using this command:
 
 ```bash
 tar -xf grandcentralframes.tar.gz -C /path/to/dataset/
