@@ -47,21 +47,21 @@ python train.py --data-dir /path/to/dataset/
 
 ## Using SCALOR in your project
 
-### Foreground and background competition
+### Foreground not working
 
 If you find the background module explains everything in the image and the foreground module is turned off, first check the following two settings:
 
-1. The `num_cell_h` and `num_cell_w` in [common.py](common.py). If the objects in the scene are densely position in a local area, the number of cell (num_cell_h and num_cell_w) should be larger to provide enough cells in that local area.
+1. The `num_cell_h` and `num_cell_w` in [common.py](common.py). If the objects in the scene are densely positioned in a local area, the number of cells (num_cell_h and num_cell_w) should be larger to provide enough cells in that local area.
 
-2. The `max_num_obj` in [common.py](common.py). In the early training stage, this number is higher the better (smaller then the total number of cells), since it allows more activated cells to accelerate the foreground training. Feel free to reduce it later.
+2. The `max_num_obj` in [common.py](common.py). In the early training stage, this number is higher the better (smaller than the total number of cells) since it allows more activated cells to accelerate the foreground training. Feel free to reduce it later.
 
-Additionally, I also added the following two settings in the code, feel free to try any of them:
+Additionally, I also added the following two settings in the code. Feel free to try any of them:
 
 1. Using a weaker background decoder, one option is to set the `using_bg_sbd` flag to True in [common.py](common.py).
 
-2. Using a training curriculum in the early training stage. This can be don by setting the `phase_bg_alpha_curriculum` to True in [common.py](common.py).
+2. Using a training curriculum in the early training stage. This can be done by setting the `phase_bg_alpha_curriculum` to True in [common.py](common.py).
 
-Feel free to let me know if you face any other problem when adopting SCALOR in your project.
+Feel free to let me know if you face any other problems when adopting SCALOR in your project.
 
 ## Citation
 

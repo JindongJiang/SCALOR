@@ -69,5 +69,5 @@ cfg = {
     'z_pres_anneal_end_value': 1e-3,
     'phase_do_remove_detach': True,
     'remove_detach_step': 30000,
-    'max_num_obj': 45 # Remove this constrain in discovery.py if you have enough GPU memory.
+    'max_num_obj': 45 # Remove this constrain in discovery.py by setting phase_obj_num_contrain to False if you have enough GPU memory.
 }
