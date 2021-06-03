@@ -351,7 +351,7 @@ class ProposalRejectionCell(nn.Module):
 
             z_pres = z_pres * pres_mask
 
-        # The following "if" is useful only if you don't have high-memery GPUs, better to remove it if you do
+        # The following "if" is useful only if you don't have high-memory GPUs, better to remove it if you do
         if self.training and phase_obj_num_contrain:
             z_pres = z_pres.view(bs, -1)
 

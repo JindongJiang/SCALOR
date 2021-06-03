@@ -110,6 +110,63 @@ class BgDecoder(nn.Module):
         # return bg, alpha_map
         return bg
 
+class BgDecoderSBD(nn.Module):
+
+    def __init__(self):
+        super(BgDecoderSBD, self).__init__()
+
+        if img_w == 128:
+            self.dec = nn.Sequential(
+                nn.Conv2d(bg_what_dim + 2, 64, 5, padding=2),
+                nn.CELU(),
+                nn.GroupNorm(8, 64),
+
+                nn.Conv2d(64, 64, 5, padding=2),
+                nn.CELU(),
+                nn.GroupNorm(8, 64),
+
+                nn.Conv2d(64, 64, 5, padding=2),
+                nn.CELU(),
+                nn.GroupNorm(8, 64),
+            )
+        elif img_w == 64:
+            self.dec = nn.Sequential(
+                nn.Conv2d(bg_what_dim + 2, 64, 5, padding=2),
+                nn.CELU(),
+                nn.GroupNorm(8, 64),
+
+                nn.Conv2d(64, 64, 5, padding=2),
+                nn.CELU(),
+                nn.GroupNorm(8, 64),
+            )
+
+        self.bg_dec = nn.Conv2d(64, 3, 3, padding=1)
+
+        self.register_buffer(
+            'position_embedding',
+            torch.stack(
+                torch.meshgrid(
+                    [torch.linspace(-1, 1, img_w), torch.linspace(-1, 1, img_w)]
+                ), dim=0
+            ).unsqueeze(dim=0)
+        )
+
+    def forward(self, x):
+        bs = x.size(0)
+        inp = torch.cat(
+            [
+                self.position_embedding.expand(bs, -1, -1, -1),
+                x[..., None, None].expand(-1, -1, img_h, img_w)
+            ],
+            dim=1
+        )
+        o = self.dec(inp)
+        bg = torch.sigmoid(self.bg_dec(o))
+        # alpha_map = torch.sigmoid(self.alpha_dec(o))
+
+        # return bg, alpha_map
+        return bg
+
 
 class BgEncoder(nn.Module):
 

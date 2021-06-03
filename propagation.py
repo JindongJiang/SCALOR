@@ -265,7 +265,7 @@ class PropagationCell(nn.Module):
         z_pres_y = q_z_pres.rsample()
         z_pres = torch.sigmoid(z_pres_y)
 
-        cumsum_one_minus_z_pres += (1 - z_pres) * obj_mask.view(bns, 1)
+        cumsum_one_minus_z_pres = cumsum_one_minus_z_pres + (1 - z_pres) * obj_mask.view(bns, 1)
         z_pres = z_pres * (cumsum_one_minus_z_pres < self.z_pres_stop_threshold).float()
 
         # (bs, dim, glimpse_size, glimpse_size)

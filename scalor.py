@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.distributions import Normal, kl_divergence
 from discovery import ProposalRejectionCell
 from propagation import PropagationCell
-from modules import ImgEncoder, ZWhatEnc, GlimpseDec, BgDecoder, BgEncoder, ConvLSTMEncoder
+from modules import ImgEncoder, ZWhatEnc, GlimpseDec, BgDecoder, BgEncoder, ConvLSTMEncoder, BgDecoderSBD
 from common import *
 
 
@@ -30,7 +30,7 @@ class SCALOR(nn.Module):
         )
         if not self.args.phase_no_background:
             self.bg_enc = BgEncoder()
-            self.bg_dec = BgDecoder()
+            self.bg_dec = BgDecoder() if not self.args.using_bg_sbd else BgDecoderSBD()
             self.bg_prior_rnn = nn.GRUCell(bg_what_dim, bg_prior_rnn_hid_dim)
             self.bg_prior_net = nn.Linear(bg_prior_rnn_hid_dim, bg_what_dim * 2)
 
@@ -213,6 +213,10 @@ class SCALOR(nn.Module):
                 z_bg_mean = seq.new_zeros(1)
                 z_bg_std = seq.new_zeros(1)
                 bg = seq.new_zeros(bs, 3, img_h, img_w)
+
+            if self.args.phase_bg_alpha_curriculum:
+                if self.args.global_step < self.args.bg_alpha_curriculum_steps:
+                    alpha_map = alpha_map.new_ones(alpha_map.size()) * self.args.bg_alpha_curriculum_value
 
             y = y_nobg + (1 - alpha_map) * bg
 
