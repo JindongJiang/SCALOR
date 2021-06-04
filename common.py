@@ -53,7 +53,7 @@ cfg = {
     'phase_nll': False,
     'phase_gen_disc': True,
     'phase_bg_alpha_curriculum': False,
-    'bg_alpha_curriculum_steps': 500,
+    'bg_alpha_curriculum_steps': 200,
     'bg_alpha_curriculum_value': 0.9,
     'using_bg_sbd': False,
     'gen_disc_pres_probs': 0.1,

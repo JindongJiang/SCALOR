@@ -172,6 +172,10 @@ class SCALOR(nn.Module):
 
             importance_map_norm = importance_map / (importance_map.sum(dim=1, keepdim=True) + eps)
 
+            if self.args.phase_bg_alpha_curriculum:
+                if self.args.global_step < self.args.bg_alpha_curriculum_steps:
+                    alpha_map_disc = alpha_map_disc.new_ones(alpha_map_disc.size()) * self.args.bg_alpha_curriculum_value
+
             # (bs, 1, img_h, img_w)
             alpha_map = torch.cat((alpha_map_prop, alpha_map_disc), dim=1).sum(dim=1)
 
@@ -213,10 +217,6 @@ class SCALOR(nn.Module):
                 z_bg_mean = seq.new_zeros(1)
                 z_bg_std = seq.new_zeros(1)
                 bg = seq.new_zeros(bs, 3, img_h, img_w)
-
-            if self.args.phase_bg_alpha_curriculum:
-                if self.args.global_step < self.args.bg_alpha_curriculum_steps:
-                    alpha_map = alpha_map.new_ones(alpha_map.size()) * self.args.bg_alpha_curriculum_value
 
             y = y_nobg + (1 - alpha_map) * bg
 
