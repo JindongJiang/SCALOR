@@ -68,12 +68,9 @@ Feel free to let me know if you face any other problems when adopting SCALOR in 
 ```
 @inproceedings{JiangJanghorbaniDeMeloAhn2020SCALOR,
   title={SCALOR: Generative World Models with Scalable Object Representations},
-  author={Jindong Jiang and Sepehr Janghorbani and Gerard {de Melo} and Sungjin Ahn},
-  booktitle={Proceedings of ICLR 2020},
-  year={2020},
-  publisher = {OpenReview.net},
-  location = {Addis Ababa, Ethiopia},
-  url = {https://openreview.net/pdf?id=SJxrKgStDH},
+  author={Jiang, Jindong and Janghorbani, Sepehr and De Melo, Gerard and Ahn, Sungjin},
+  booktitle={International Conference on Learning Representations},
+  year={2019}
 }
 ```
 
